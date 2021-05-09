@@ -1,6 +1,7 @@
 import * as pino from 'pino';
 import * as assert from 'assert';
 import { Broker } from "../src/broker";
+import { PredicateConsumerStrategy } from '../src/consumerStrategies/predicateConsumerStrategy';
 import { PriorityConsumerStrategy } from '../src/consumerStrategies/priorityConsumerStrategy';
 import { CustomProducer } from "../src/customProducer";
 import { TtlConsumerStrategy } from "../src/consumerStrategies/ttlConsumerStrategy";
@@ -132,5 +133,43 @@ describe('Priority Message System', async function () {
             ],
         )
     })
+
+    it('works with the PredicateConsumerStrategy', async function() {
+        const resultHandler = buildResultHandler();
+
+        const consumerStrategy = new PredicateConsumerStrategy(logger, 'data_0', 3);
+
+        const consumers = [
+            new TestCustomConsumer(logger,'A', resultHandler.collectResult, consumerStrategy),
+            new TestCustomConsumer(logger,'B', resultHandler.collectResult, consumerStrategy),
+        ];
+
+        const exitHandler = buildExitHandler();
+
+        const broker = new Broker(logger, consumers, 3, 3, 500, exitHandler.onExit);
+        const producer = new CustomProducer(broker);
+
+        for (let i = 0; i < 3; i++) {
+            const message: Message = {
+                data: `data_${i}`,
+                priority: 0,
+                ttl: 0,
+                predicateRunCount: 0,
+            }
+
+            producer.produce(JSON.stringify(message));
+        }
+
+        await exitHandler.exitPromise;
+
+        assert.deepStrictEqual(
+            resultHandler.results,
+            [
+                { consumerId: 'A', data: 'DATA_1' },
+                { consumerId: 'A', data: 'DATA_2' },
+                { consumerId: 'B', data: 'DATA_0' }
+            ],
+        )
+    });
 });
 
