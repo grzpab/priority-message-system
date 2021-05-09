@@ -3,7 +3,7 @@ import * as assert from 'assert';
 import { Broker } from "../src/broker";
 import { PriorityConsumerStrategy } from '../src/consumerStrategies/priorityConsumerStrategy';
 import { CustomProducer } from "../src/customProducer";
-// import { TtlConsumerStrategy } from "../src/consumerStrategies/ttlConsumerStrategy";
+import { TtlConsumerStrategy } from "../src/consumerStrategies/ttlConsumerStrategy";
 import { TestCustomConsumer } from './testCustomConsumer';
 import { EventEmitter } from 'events';
 import { Result } from './resultCollector';
@@ -46,8 +46,6 @@ describe('Priority Message System', async function () {
     it('works with the PriorityConsumerStrategy', async function () {
         const resultHandler = buildResultHandler();
 
-        // const consumerStrategy = new TtlConsumerStrategy(4, 0);
-
         const consumerStrategy = new PriorityConsumerStrategy(logger,5);
 
         const consumers = [
@@ -89,5 +87,50 @@ describe('Priority Message System', async function () {
             ],
         )
     });
+
+    it('works with the TtlConsumerStrategy', async function() {
+        const resultHandler = buildResultHandler();
+
+        const consumerStrategy = new TtlConsumerStrategy(logger, 0, 4);
+
+        const consumers = [
+            new TestCustomConsumer(logger,'A', resultHandler.collectResult, consumerStrategy),
+            new TestCustomConsumer(logger,'B', resultHandler.collectResult, consumerStrategy),
+            new TestCustomConsumer(logger,'C', resultHandler.collectResult, consumerStrategy),
+        ];
+
+        const exitHandler = buildExitHandler();
+
+        const broker = new Broker(logger, consumers, 3, 3, 500, exitHandler.onExit);
+        const producer = new CustomProducer(broker);
+
+        for (let i = 0; i < 9; i++) {
+            const message: Message = {
+                data: `data_${i}`,
+                priority: 0,
+                ttl: 9 - i,
+                predicateRunCount: 0,
+            }
+
+            producer.produce(JSON.stringify(message));
+        }
+
+        await exitHandler.exitPromise;
+
+        assert.deepStrictEqual(
+            resultHandler.results,
+            [
+                { consumerId: 'C', data: 'DATA_6' },
+                { consumerId: 'C', data: 'DATA_7' },
+                { consumerId: 'C', data: 'DATA_8' },
+                { consumerId: 'B', data: 'DATA_5' },
+                { consumerId: 'A', data: 'DATA_4' },
+                { consumerId: 'B', data: 'DATA_3' },
+                { consumerId: 'C', data: 'DATA_2' },
+                { consumerId: 'A', data: 'DATA_1' },
+                { consumerId: 'B', data: 'DATA_0' }
+            ],
+        )
+    })
 });
 

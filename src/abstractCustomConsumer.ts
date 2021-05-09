@@ -26,7 +26,7 @@ export abstract class AbstractCustomConsumer<M> implements Consumer {
             try {
                 this.consumeMessage(encodedMessage);
             } catch (error) {
-                console.error(error);
+                this.logger.error({ encodedMessage, error}, 'Error while consuming a message');
             }
         }
     }
