@@ -26,6 +26,15 @@ const buildExitHandler = () => {
     }
 }
 
+const buildResultHandler = () => {
+    const results: Result[] = [];
+    const collectResult = (result: Result) => {
+        results.push(result);
+    }
+
+    return { results, collectResult };
+}
+
 describe('Priority Message System', async function () {
     const logger = pino({
         level: 'silent',
@@ -35,19 +44,16 @@ describe('Priority Message System', async function () {
     this.timeout(5000);
 
     it('works with the PriorityConsumerStrategy', async function () {
-        const results: Result[] = [];
-        const collectResult = (result: Result) => {
-            results.push(result);
-        }
+        const resultHandler = buildResultHandler();
 
         // const consumerStrategy = new TtlConsumerStrategy(4, 0);
 
         const consumerStrategy = new PriorityConsumerStrategy(logger,5);
 
         const consumers = [
-            new TestCustomConsumer(logger,'A', collectResult, consumerStrategy),
-            new TestCustomConsumer(logger,'B', collectResult, consumerStrategy),
-            new TestCustomConsumer(logger,'C', collectResult, consumerStrategy),
+            new TestCustomConsumer(logger,'A', resultHandler.collectResult, consumerStrategy),
+            new TestCustomConsumer(logger,'B', resultHandler.collectResult, consumerStrategy),
+            new TestCustomConsumer(logger,'C', resultHandler.collectResult, consumerStrategy),
         ];
 
         const exitHandler = buildExitHandler();
@@ -69,7 +75,7 @@ describe('Priority Message System', async function () {
         await exitHandler.exitPromise;
 
         assert.deepStrictEqual(
-            results,
+            resultHandler.results,
             [
                 { consumerId: 'B', data: 'DATA_5' },
                 { consumerId: 'C', data: 'DATA_6' },
