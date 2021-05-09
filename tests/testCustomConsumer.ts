@@ -1,11 +1,11 @@
-import { Logger } from 'pino';
-import { Message } from 'src/message';
-import { ConsumerStrategy } from '../src/consumerStrategies/consumerStrategy';
-import { CustomConsumer } from '../src/customConsumer';
+import { Logger } from "pino";
+import { Message } from "src/message";
+import { ConsumerStrategy } from "../src/consumerStrategies/consumerStrategy";
+import { CustomConsumer } from "../src/customConsumer";
 import {
     CollectResult,
     Result,
-} from './resultCollector';
+} from "./resultCollector";
 
 export class TestCustomConsumer extends CustomConsumer {
     public constructor(
@@ -18,7 +18,7 @@ export class TestCustomConsumer extends CustomConsumer {
     }
 
     protected processMessage(message: Message): void {
-        this.logger.debug({ message }, 'Processing a message');
+        this.logger.debug({ message }, "Processing a message");
 
         const data = message.data.toUpperCase();
 

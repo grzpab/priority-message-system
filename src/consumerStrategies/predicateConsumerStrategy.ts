@@ -1,4 +1,4 @@
-import { Logger } from 'pino';
+import { Logger } from "pino";
 import { ConsumerStrategy } from "./consumerStrategy";
 import { Message } from "../message";
 import { MessageProcessingError } from "../abstractCustomConsumer";
@@ -17,7 +17,7 @@ export class PredicateConsumerStrategy implements ConsumerStrategy<Message> {
     }
 
     public assertCanProcessMessage(message: Message): void {
-        this.logger.debug({ message }, 'Asserting if the consumer can process this message');
+        this.logger.debug({ message }, "Asserting if the consumer can process this message");
 
         if (message.data === this.notAcceptedData && message.predicateRunCount < this.maxPredicateRunCount) {
             throw new MessageHasTooLowPriority();

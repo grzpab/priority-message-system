@@ -1,4 +1,4 @@
-import { Logger } from 'pino';
+import { Logger } from "pino";
 import { MessageProcessingError } from "../abstractCustomConsumer";
 import { ConsumerStrategy } from "./consumerStrategy";
 import type { Message } from "../message";
@@ -18,7 +18,7 @@ export class TtlConsumerStrategy implements ConsumerStrategy<Message> {
     }
 
     public assertCanProcessMessage(message: Message): void {
-        this.logger.debug({ message }, 'Asserting if the consumer can process this message');
+        this.logger.debug({ message }, "Asserting if the consumer can process this message");
 
         if (message.ttl <= this.lowTtl) {
             throw new MessageHasLowTtlError();

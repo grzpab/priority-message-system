@@ -1,4 +1,4 @@
-import { Logger } from 'pino';
+import { Logger } from "pino";
 import { ConsumerStrategy } from "./consumerStrategy";
 import { Message } from "../message";
 import { MessageProcessingError } from "../abstractCustomConsumer";
@@ -16,7 +16,7 @@ export class PriorityConsumerStrategy implements ConsumerStrategy<Message> {
     }
 
     public assertCanProcessMessage(message: Message): void {
-        this.logger.debug({ message }, 'Asserting if the consumer can process this message');
+        this.logger.debug({ message }, "Asserting if the consumer can process this message");
 
         if (message.priority < this.priority_threshold) {
             throw new MessageHasTooLowPriority();
