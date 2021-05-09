@@ -7,16 +7,34 @@ import { CustomProducer } from "../src/customProducer";
 import { TestCustomConsumer } from './testCustomConsumer';
 import { EventEmitter } from 'events';
 import { Result } from './resultCollector';
+import { Message } from 'src/message';
 
-describe('', () => {
-    it('', async function () {
-        const logger = pino({
-            level: 'silent',
-            prettyPrint: true,
-        });
+const buildExitHandler = () => {
+    const eventEmitter = new EventEmitter();
 
-        this.timeout(5000);
+    const exitPromise = new Promise<void>((resolve) => {
+        eventEmitter.on('exit', () => resolve());
+    });
 
+    const onExit = () => {
+        eventEmitter.emit('exit');
+    }
+
+    return {
+        exitPromise,
+        onExit,
+    }
+}
+
+describe('Priority Message System', async function () {
+    const logger = pino({
+        level: 'silent',
+        prettyPrint: true,
+    });
+
+    this.timeout(5000);
+
+    it('works with the PriorityConsumerStrategy', async function () {
         const results: Result[] = [];
         const collectResult = (result: Result) => {
             results.push(result);
@@ -32,35 +50,37 @@ describe('', () => {
             new TestCustomConsumer(logger,'C', collectResult, consumerStrategy),
         ];
 
-        const eventEmitter = new EventEmitter();
+        const exitHandler = buildExitHandler();
 
-        const exitPromise = new Promise<void>((resolve) => {
-            eventEmitter.on('exit', () => resolve());
-        });
-
-        const onExit = () => {
-            eventEmitter.emit('exit');
-        }
-
-        const broker = new Broker(logger, consumers, 3, 3, 500, onExit);
-
+        const broker = new Broker(logger, consumers, 3, 3, 500, exitHandler.onExit);
         const producer = new CustomProducer(broker);
 
         for (let i = 0; i < 9; i++) {
-            producer.produce(JSON.stringify({
-                data: i.toString(10),
+            const message: Message = {
+                data: `data_${i}`,
                 priority: i,
                 ttl: 5,
-            }));
+                predicateRunCount: 0,
+            }
+
+            producer.produce(JSON.stringify(message));
         }
 
-        await exitPromise;
-
-        console.log('results');
+        await exitHandler.exitPromise;
 
         assert.deepStrictEqual(
             results,
-            [],
+            [
+                { consumerId: 'B', data: 'DATA_5' },
+                { consumerId: 'C', data: 'DATA_6' },
+                { consumerId: 'C', data: 'DATA_7' },
+                { consumerId: 'C', data: 'DATA_8' },
+                { consumerId: 'B', data: 'DATA_4' },
+                { consumerId: 'C', data: 'DATA_3' },
+                { consumerId: 'A', data: 'DATA_2' },
+                { consumerId: 'B', data: 'DATA_1' },
+                { consumerId: 'C', data: 'DATA_0' }
+            ],
         )
     });
 });

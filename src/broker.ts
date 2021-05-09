@@ -23,7 +23,7 @@ export class Broker {
         protected readonly interval: number,
         protected readonly onExit: () => void,
     ) {
-        this.logger = parentLogger.child({ class: Broker.name });
+        this.logger = parentLogger.child({ class: this.constructor.name });
 
         const produce = (message: string) => this.receive(message);
 
@@ -58,6 +58,8 @@ export class Broker {
         while(this.queue.length > 0) {
             const oldMessages = this.queue.slice(0, this.maxQueueSize);
             this.queue = this.queue.slice(oldMessages.length);
+
+            this.logger.debug({ oldMessages }, 'Forwarding messages to the current consumer');
 
             this.getCurrentConsumer().consume(oldMessages);
         }

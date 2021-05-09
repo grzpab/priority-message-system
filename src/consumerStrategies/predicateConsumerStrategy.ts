@@ -13,7 +13,7 @@ export class PredicateConsumerStrategy implements ConsumerStrategy<Message> {
         protected readonly notAcceptedData: string,
         protected readonly maxPredicateRunCount: number,
     ) {
-        this.logger = parentLogger.child({ class: PredicateConsumerStrategy.name });
+        this.logger = parentLogger.child({ class: this.constructor.name });
     }
 
     public assertCanProcessMessage(message: Message): void {

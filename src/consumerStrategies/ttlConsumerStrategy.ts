@@ -14,7 +14,7 @@ export class TtlConsumerStrategy implements ConsumerStrategy<Message> {
         protected readonly lowTtl: number,
         protected readonly highTtl: number,
     ) {
-        this.logger = parentLogger.child({ class: TtlConsumerStrategy.name });
+        this.logger = parentLogger.child({ class: this.constructor.name });
     }
 
     public assertCanProcessMessage(message: Message): void {

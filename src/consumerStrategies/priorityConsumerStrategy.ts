@@ -12,7 +12,7 @@ export class PriorityConsumerStrategy implements ConsumerStrategy<Message> {
         parentLogger: Logger,
         private readonly priority_threshold: number,
     ) {
-        this.logger = parentLogger.child({ class: PriorityConsumerStrategy.name });
+        this.logger = parentLogger.child({ class: this.constructor.name });
     }
 
     public assertCanProcessMessage(message: Message): void {
