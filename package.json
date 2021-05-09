@@ -2,15 +2,13 @@
   "name": "priority-message-system",
   "version": "0.0.1",
   "description": "An example of a priority-message system",
-  "main": "src/index.ts",
   "author": "Gregory P. Pabian",
   "license": "MIT",
   "scripts": {
     "lint": "yarn eslint ./src/**/*.ts",
     "lint:fix": "yarn eslint ./src/**/*.ts tests/**/*.ts --fix",
     "test:unit": "mocha",
-    "test:coverage": "nyc mocha",
-    "watch": "nodemon --exec ./node_modules/.bin/ts-node ./src/index.ts"
+    "test:coverage": "nyc mocha"
   },
   "dependencies": {
     "fp-ts": "2.10.5",
