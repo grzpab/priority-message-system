@@ -1,3 +1,4 @@
+import * as pino from 'pino';
 import * as assert from 'assert';
 import { Broker } from "../src/broker";
 import { PriorityConsumerStrategy } from '../src/consumerStrategies/priorityConsumerStrategy';
@@ -9,6 +10,11 @@ import { Result } from './resultCollector';
 
 describe('', () => {
     it('', async function () {
+        const logger = pino({
+            level: 'silent',
+            prettyPrint: true,
+        });
+
         this.timeout(5000);
 
         const results: Result[] = [];
@@ -18,12 +24,12 @@ describe('', () => {
 
         // const consumerStrategy = new TtlConsumerStrategy(4, 0);
 
-        const consumerStrategy = new PriorityConsumerStrategy(5);
+        const consumerStrategy = new PriorityConsumerStrategy(logger,5);
 
         const consumers = [
-            new TestCustomConsumer('A', collectResult, consumerStrategy),
-            new TestCustomConsumer('B', collectResult, consumerStrategy),
-            new TestCustomConsumer('C', collectResult, consumerStrategy),
+            new TestCustomConsumer(logger,'A', collectResult, consumerStrategy),
+            new TestCustomConsumer(logger,'B', collectResult, consumerStrategy),
+            new TestCustomConsumer(logger,'C', collectResult, consumerStrategy),
         ];
 
         const eventEmitter = new EventEmitter();
@@ -36,7 +42,7 @@ describe('', () => {
             eventEmitter.emit('exit');
         }
 
-        const broker = new Broker(consumers, 3, 3, 500, onExit);
+        const broker = new Broker(logger, consumers, 3, 3, 500, onExit);
 
         const producer = new CustomProducer(broker);
 
@@ -49,6 +55,8 @@ describe('', () => {
         }
 
         await exitPromise;
+
+        console.log('results');
 
         assert.deepStrictEqual(
             results,

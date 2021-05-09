@@ -1,3 +1,4 @@
+import { Logger } from 'pino';
 import { Message } from 'src/message';
 import { ConsumerStrategy } from '../src/consumerStrategies/consumerStrategy';
 import { CustomConsumer } from '../src/customConsumer';
@@ -8,15 +9,16 @@ import {
 
 export class TestCustomConsumer extends CustomConsumer {
     public constructor(
+        readonly parentLogger: Logger,
         protected readonly id: string,
         protected readonly collectResult: CollectResult,
         protected readonly consumerStrategy: ConsumerStrategy<Message>,
     ) {
-        super(consumerStrategy);
+        super(parentLogger, consumerStrategy);
     }
 
     protected processMessage(message: Message): void {
-        console.log('HERE');
+        this.logger.debug({ message }, 'Processing a message');
 
         const data = message.data.toUpperCase();
 

@@ -1,14 +1,18 @@
+import { Logger } from 'pino';
 import type { Consumer, Produce } from "./broker";
 import { ConsumerStrategy } from "./consumerStrategies/consumerStrategy";
 
 export class MessageProcessingError extends Error {}
 
 export abstract class AbstractCustomConsumer<M> implements Consumer {
-    private produce?: Produce;
+    protected readonly logger: Logger;
+    protected produce?: Produce;
 
     public constructor(
+        readonly parentLogger: Logger,
         protected readonly consumerStrategy: ConsumerStrategy<M>,
     ) {
+        this.logger = parentLogger.child({ class: this.constructor.name });
     }
 
     public setProduce(produce: Produce): void {
@@ -16,6 +20,8 @@ export abstract class AbstractCustomConsumer<M> implements Consumer {
     }
 
     public consume(encodedMessages: ReadonlyArray<string>): void {
+        this.logger.debug('Consuming messages');
+
         for (const encodedMessage of encodedMessages) {
             try {
                 this.consumeMessage(encodedMessage);
@@ -26,6 +32,8 @@ export abstract class AbstractCustomConsumer<M> implements Consumer {
     }
 
     protected consumeMessage(encodedMessage: string): void {
+        this.logger.debug({ encodedMessage }, 'Consuming a message');
+
         const message = this.decodeMessage(encodedMessage);
 
         try {
@@ -33,6 +41,7 @@ export abstract class AbstractCustomConsumer<M> implements Consumer {
             this.processMessage(message);
         } catch (error) {
             if (!(error instanceof MessageProcessingError)) {
+                this.logger.error({ message, error }, 'Message processing failed with a unrecoverable error.');
                 return;
             }
 
