@@ -1,11 +1,11 @@
-import { Logger } from "pino";
-import { Message } from "src/message";
-import { ConsumerStrategy } from "../src/consumerStrategies/consumerStrategy";
-import { CustomConsumer } from "../src/customConsumer";
-import {
+import type { Logger } from "pino";
+import type { Message } from "src/message";
+import type {
     CollectResult,
     Result,
 } from "./resultCollector";
+import { ConsumerStrategy } from "../src/consumerStrategies/consumerStrategy";
+import { CustomConsumer } from "../src/customConsumer";
 
 export class TestCustomConsumer extends CustomConsumer {
     public constructor(

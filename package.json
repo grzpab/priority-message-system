@@ -5,7 +5,7 @@
   "author": "Gregory P. Pabian",
   "license": "MIT",
   "scripts": {
-    "lint": "yarn eslint ./src/**/*.ts",
+    "lint": "yarn eslint ./src/**/*.ts tests/**/*.ts",
     "lint:fix": "yarn eslint ./src/**/*.ts tests/**/*.ts --fix",
     "test:unit": "mocha",
     "test:coverage": "nyc mocha"

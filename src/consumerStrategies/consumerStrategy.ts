@@ -1,4 +1,4 @@
-import { MessageProcessingError } from "../abstractCustomConsumer";
+import type { MessageProcessingError } from "../abstractCustomConsumer";
 
 export interface ConsumerStrategy<M> {
     assertCanProcessMessage(message: M): void;

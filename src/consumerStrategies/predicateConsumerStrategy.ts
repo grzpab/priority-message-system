@@ -1,6 +1,6 @@
-import { Logger } from "pino";
+import type { Logger } from "pino";
+import type { Message } from "../message";
 import { ConsumerStrategy } from "./consumerStrategy";
-import { Message } from "../message";
 import { MessageProcessingError } from "../abstractCustomConsumer";
 
 class MessageHasTooLowPriority extends MessageProcessingError {}

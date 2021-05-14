@@ -1,14 +1,14 @@
 import * as pino from "pino";
 import * as assert from "assert";
+import { EventEmitter } from "events";
+import type { Result } from "./resultCollector";
+import type { Message } from "../src/message";
 import { Broker } from "../src/broker";
 import { PredicateConsumerStrategy } from "../src/consumerStrategies/predicateConsumerStrategy";
 import { PriorityConsumerStrategy } from "../src/consumerStrategies/priorityConsumerStrategy";
 import { CustomProducer } from "../src/customProducer";
 import { TtlConsumerStrategy } from "../src/consumerStrategies/ttlConsumerStrategy";
 import { TestCustomConsumer } from "./testCustomConsumer";
-import { EventEmitter } from "events";
-import { Result } from "./resultCollector";
-import { Message } from "src/message";
 
 const buildExitHandler = () => {
     const eventEmitter = new EventEmitter();

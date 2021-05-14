@@ -1,7 +1,7 @@
-import { Logger } from "pino";
+import type { Logger } from "pino";
+import type { Message } from "../message";
 import { MessageProcessingError } from "../abstractCustomConsumer";
 import { ConsumerStrategy } from "./consumerStrategy";
-import type { Message } from "../message";
 
 class MessageHasHighTtlError extends MessageProcessingError {}
 class MessageHasLowTtlError extends MessageProcessingError {}

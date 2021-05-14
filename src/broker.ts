@@ -1,5 +1,5 @@
 import Timeout = NodeJS.Timeout;
-import { Logger } from 'pino';
+import type { Logger } from 'pino';
 
 export type Produce = (message: string) => void;
 

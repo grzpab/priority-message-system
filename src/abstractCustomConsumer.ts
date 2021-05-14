@@ -1,4 +1,4 @@
-import { Logger } from 'pino';
+import type { Logger } from 'pino';
 import type { Consumer, Produce } from "./broker";
 import { ConsumerStrategy } from "./consumerStrategies/consumerStrategy";
 
