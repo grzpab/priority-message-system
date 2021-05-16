@@ -1,0 +1,35 @@
+@startuml
+title "High-Level Component Overview"
+
+skinparam nodesep 60
+skinparam ranksep 20
+
+rectangle Producers as p {
+    component "Producer A" as pa
+    component "Producer B" as pb
+    component "Producer C" as pc
+}
+
+component "Broker" as b
+
+rectangle Consumers as c {
+    component "Consumer D" as cd
+    component "Consumer E" as ce
+    component "Consumer F" as cf
+}
+
+pa --[hidden]down-> pb
+pb --[hidden]down-> pc
+cd --[hidden]down-> ce
+ce --[hidden]down-> cf
+
+pa -right-> b: message
+pb -right-> b: message
+pc -up-> b: message
+
+b -right-> cd: message batch
+cd ..> b: postponed message
+b -right-> ce: message batch
+b -up-> cf: message batch
+cf ..> b: postponed message
+@enduml

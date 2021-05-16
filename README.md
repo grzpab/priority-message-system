@@ -7,6 +7,8 @@ Serves as an inspiration for introducing priority messages to systems that do no
 ## Introduction
 The system has three types of components: a broker, a consumer, and a producer; one and only one broker might run, but there might exist multiple consumers and producers. These components exchange messages in an orderly fashion, taking into account transmission control information embedded in the messages.
 
+![hlco](./high_level_component_overview.png "High-Level Component Overview")
+
 ### Message
 A string containing data (agnostic to the system) and transmission control information. A message batch contains a handful of messages. The system sorts message by the time a broker accepted them.
 
@@ -25,6 +27,7 @@ Producers send messages to the broker. Producers can arbitrarily set transmissio
 Consumers with this strategy will only process messages that either:
 * satisfy the predicate (a function that accepts a message and returns a boolean value) or
 * have not been processed for a predefined number of predicate executions.
+
 Consumers send every rejected message back to the broker with an incremented count of predicate runs against it.
 
 ### Priority-based Consumer Strategy
