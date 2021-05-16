@@ -21,7 +21,16 @@ Producers send messages to the broker. Producers can arbitrarily set transmissio
 
 ## Consumer Strategies
 
-
 ### Predicate-based Consumer Strategy
+Consumers with this strategy will only process messages that either:
+* satisfy the predicate (a function that accepts a message and returns a boolean value) or
+* have not been processed for a predefined number of predicate executions.
+Consumers send every rejected message back to the broker with an incremented count of predicate runs against it.
+
 ### Priority-based Consumer Strategy
+Consumers with this strategy will only process messages with their priority set above the priority threshold. Consumers send every rejected message back to the broker:
+* with an incremented priority, if the message priority was too low,
+* with a decremented priority, if the consumer could not process the message.
+
 ### TTL-based Consumer Strategy
+Consumers with this strategy will only process messages with their TTL (Time-To-Live) within a specific range. Consumers will permanently reject messages with low TTL without sending them back to the broker; for messages with high TTL, consumers will send them back with a decremented TTL.
