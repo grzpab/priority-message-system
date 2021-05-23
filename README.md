@@ -37,3 +37,9 @@ Consumers with this strategy will only process messages with their priority set 
 
 ### TTL-based Consumer Strategy
 Consumers with this strategy will only process messages with their TTL (Time-To-Live) within a specific range. Consumers will permanently reject messages with low TTL without sending them back to the broker; for messages with high TTL, consumers will send them back with a decremented TTL.
+
+## Execution
+The project requires Node.js and Yarn installed.
+
+    yarn
+    yarn test:unit
